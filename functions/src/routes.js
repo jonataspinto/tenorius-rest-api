@@ -41,4 +41,38 @@ routes.get('/users', async (request, response) => {
   }
 });
 
+routes.delete('/users/:userId', (request, response) => {
+  const { userId } = request.params;
+
+  db.collection(userCollection).doc(userId).delete()
+  .then(()=> (
+    response.status(204)
+    .send("Document successfully deleted!")
+  ))
+  .catch((error) => {
+    response.status(500)
+    .send(error);
+  });
+})
+
+routes.put('/users/:userId', async (request, response) => {
+  const { userId } = request.params;
+  
+  await db.collection(userCollection)
+  .doc(userId)
+  .set(
+    request.body,
+    {merge:true}
+  )
+  .then(()=> (
+    response.json({
+      id:userId
+    })
+  ))
+  .catch((error)=> (
+    response.status(500)
+    .send(error)
+  ))
+});
+
 module.exports = routes;
